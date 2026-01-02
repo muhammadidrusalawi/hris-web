@@ -2,16 +2,19 @@ import AuthLayout from "@/layouts/AuthLayout";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { IdCardLanyard } from "lucide-react";
+import { Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type LoginForm, loginSchema } from "@/schemas/auth/login-schema";
-import { loginService } from "@/services/auth";
+import {
+    type LoginWithEmployeeCodeForm,
+    loginWithEmployeeCodeSchema,
+} from "@/schemas/auth/login-with-employee-code-schema";
+import { loginWithEmployeeCodeService } from "@/services/auth";
 import { toast } from "react-toastify";
 
-export default function Login() {
+export default function LoginWithEmployeeCode() {
     const navigate = useNavigate();
     const { login } = useAuth();
 
@@ -20,25 +23,20 @@ export default function Login() {
         handleSubmit,
         reset,
         formState: { errors, isSubmitting },
-    } = useForm<LoginForm>({
-        resolver: zodResolver(loginSchema),
+    } = useForm<LoginWithEmployeeCodeForm>({
+        resolver: zodResolver(loginWithEmployeeCodeSchema),
     });
 
-    const onSubmit = async (data: LoginForm) => {
+    const onSubmit = async (data: LoginWithEmployeeCodeForm) => {
         try {
-            const res = await loginService(data);
+            const res = await loginWithEmployeeCodeService(data);
             if (!res.success || !res.data) {
                 toast.error(res.message);
                 return;
             }
 
             login(res.data.user, res.data.token);
-
-            navigate(
-                res.data.user.role === "admin"
-                    ? "/admin/dashboard"
-                    : "/employee/dashboard"
-            );
+            navigate("/employee/dashboard");
 
             toast.success(res.message);
             reset();
@@ -57,35 +55,19 @@ export default function Login() {
     return (
         <AuthLayout
             title="Sign In to Your Account"
-            subtitle="Sign in using your email and password"
+            subtitle="Sign in using your employee code"
         >
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="employee_code">Employee Code</Label>
                     <div className="relative mt-1 flex flex-col gap-1">
                         <Input
-                            type="email"
-                            {...register("email")}
-                            placeholder="john@rhcp.com"
+                            type="text"
+                            {...register("employee_code")}
+                            placeholder="Enter your employee code"
                         />
-                        {errors.email && (
-                            <p className="text-red-500 text-sm">{errors.email.message}</p>
-                        )}
-                    </div>
-                </div>
-
-                <div>
-                    <Label htmlFor="password">Password</Label>
-                    <div className="relative mt-1 flex flex-col gap-1">
-                        <Input
-                            type="password"
-                            {...register("password")}
-                            placeholder="••••••••"
-                        />
-                        {errors.password && (
-                            <p className="text-red-500 text-sm">
-                                {errors.password.message}
-                            </p>
+                        {errors.employee_code && (
+                            <p className="text-red-500 text-sm">{errors.employee_code.message}</p>
                         )}
                     </div>
                 </div>
@@ -108,10 +90,10 @@ export default function Login() {
             <Button
                 variant="outline"
                 className="flex w-full gap-2"
-                onClick={() => navigate("/auth/sign-in-with-code")}
+                onClick={() => navigate("/auth/sign-in")}
             >
-                <IdCardLanyard className="h-4 w-4" />
-                Sign In using Employee Code
+                <Mail className="h-4 w-4" />
+                Sign In with Email
             </Button>
         </AuthLayout>
     );
