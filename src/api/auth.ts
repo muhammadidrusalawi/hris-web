@@ -1,6 +1,6 @@
-import {type LoginForm, loginSchema} from "@/schemas/auth/login-schema.ts";
-import type {ApiResponse} from "@/types/api.ts";
-import type {LoginResponse} from "@/types/auth.ts";
+import { type LoginForm, loginSchema } from "@/schemas/auth/login-schema.ts";
+import type { ApiResponse } from "@/types/api.ts";
+import type { LoginResponse, User } from "@/types/auth.ts";
 import axiosInstance from "@/utils/axios-instance.ts";
 import {
     type LoginWithEmployeeCodeForm,
@@ -33,5 +33,10 @@ export const loginWithEmployeeCodeApi = async (
 
 export const logoutApi = async (): Promise<ApiResponse<void>> => {
     const res = await axiosInstance.post<ApiResponse<void>>("/auth/logout");
+    return res.data;
+};
+
+export const getMe = async (): Promise<ApiResponse<User>> => {
+    const res = await axiosInstance.get<ApiResponse<User>>("/auth/me");
     return res.data;
 };
