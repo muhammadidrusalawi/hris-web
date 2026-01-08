@@ -87,9 +87,8 @@ export const positionService = {
         const queryClient = useQueryClient();
         return useMutation({
             mutationFn: (id: number) => deletePositionApi(id),
-            onSuccess: async (res) => {
-                toast.success(res.message);
-                await queryClient.invalidateQueries({ queryKey: ["positions"] });
+            onSuccess: async () => {
+                void queryClient.invalidateQueries({ queryKey: ["positions"] });
             },
 
             onError: (err: any) => {

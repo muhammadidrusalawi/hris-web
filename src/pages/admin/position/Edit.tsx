@@ -6,9 +6,10 @@ import {type UpdatePositionForm, updatePositionSchema} from "@/schemas/position/
 import {zodResolver} from "@hookform/resolvers/zod";
 import {DashboardLayout} from "@/layouts/DashboardLayout.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {ChevronLeft, Trash2} from "lucide-react";
+import {ChevronLeft, Loader2, Trash2} from "lucide-react";
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
+import {toast} from "react-toastify";
 
 export default function EditPosition() {
     const navigate = useNavigate();
@@ -55,19 +56,11 @@ export default function EditPosition() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!positionId) return;
-        if (!confirm("Delete this position?")) return;
-            deletePosition(positionId);
-            navigate("/admin/positions");
-    };
-
-
     if (isLoading) {
         return (
             <DashboardLayout>
-                <div className="h-full w-full flex items-center justify-center">
-                    <p>Loading...</p>
+                <div className="flex w-full h-full items-center justify-center">
+                    <Loader2 className="animate-spin" />
                 </div>
             </DashboardLayout>
         );
@@ -78,19 +71,40 @@ export default function EditPosition() {
             <div className="flex w-full h-full flex-col gap-6 p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-md font-semibold">Update Position</h1>
+                        <h1 className="text-md font-semibold">Edit Position</h1>
                         <p className="text-sm text-muted-foreground">
-                            lorem ipsum dolor sit amet
+                            Update the details of the selected position.
                         </p>
                     </div>
-                    <Button
-                        variant="destructive"
-                        onClick={handleDelete}
-                        className="flex items-center gap-2"
-                        disabled={isDeleting}
-                    >
-                        <Trash2 size={18} /> Delete this
-                    </Button>
+
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="destructive"
+                            disabled={isDeleting}
+                            onClick={() =>
+                                deletePosition(positionId, {
+                                    onSuccess: (res) => {
+                                        toast.success(res.message);
+                                        navigate("/admin/positions");
+                                    },
+                                })
+                            }
+                        >
+                            {isDeleting ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <Trash2 className="h-4 w-4" />
+                            )}
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={() => navigate("/admin/positions")}
+                            variant="outline"
+                            className="flex items-center gap-2"
+                        >
+                            <ChevronLeft size={18} /> Back to List
+                        </Button>
+                    </div>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -112,23 +126,16 @@ export default function EditPosition() {
                         </div>
                     </div>
 
-                    <div className="w-full flex items-center gap-2 justify-end">
-                        <Button
-                            type="button"
-                            onClick={() => navigate("/admin/positions")}
-                            variant="outline"
-                            className="flex items-center gap-2"
-                        >
-                            <ChevronLeft size={18} /> Back to List
-                        </Button>
+                    <div className="w-full flex justify-end">
                         <Button
                             type="submit"
                             disabled={isSubmitting || updateMutation.isPending}
                         >
-                            {isSubmitting || updateMutation.isPending
-                                ? "Submitting..."
-                                : "Submit"
-                            }
+                            {isSubmitting || updateMutation.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                "Save"
+                            )}
                         </Button>
                     </div>
                 </form>

@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow
 } from "@/components/ui/table.tsx";
-import {Plus, Search} from "lucide-react";
+import {Loader2, Plus, Search} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 import {positionService} from "@/services/position.ts";
 import {DashboardLayout} from "@/layouts/DashboardLayout.tsx";
@@ -27,8 +27,8 @@ export default function Positions() {
     if (isLoading)
         return (
             <DashboardLayout>
-                <div className="h-screen w-full flex items-center justify-center">
-                    <p>Loading...</p>
+                <div className="h-full w-full flex items-center justify-center">
+                    <Loader2 className="animate-spin" />
                 </div>
             </DashboardLayout>
         );
@@ -36,7 +36,7 @@ export default function Positions() {
     if (isError)
         return (
             <DashboardLayout>
-                <div className="w-full h-screen flex items-center justify-center">
+                <div className="w-full h-full flex items-center justify-center">
                     <p>Error: {(error as Error).message}</p>
                 </div>
             </DashboardLayout>

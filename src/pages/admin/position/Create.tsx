@@ -1,6 +1,6 @@
 import {DashboardLayout} from "@/layouts/DashboardLayout.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {ChevronLeft} from "lucide-react";
+import {ChevronLeft, Loader2} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
@@ -41,7 +41,7 @@ export default function CreatePosition() {
                     <div>
                         <h1 className="text-md font-semibold">Create New Position</h1>
                         <p className="text-sm text-muted-foreground">
-                            lorem ipsum dolor sit amet
+                            Provide the necessary details to create a new position.
                         </p>
                     </div>
                     <Button
@@ -73,7 +73,11 @@ export default function CreatePosition() {
                             type="submit"
                             disabled={isSubmitting}
                         >
-                            Submit
+                            {isSubmitting ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                "Save"
+                            )}
                         </Button>
                     </div>
                 </form>
