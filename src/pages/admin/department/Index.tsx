@@ -9,34 +9,37 @@ import {
     TableRow
 } from "@/components/ui/table.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {Funnel, Plus} from "lucide-react";
+import {Funnel, Loader2, Plus} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import {DashboardLayout} from "@/layouts/DashboardLayout.tsx";
-
-const departments = [
-    { code: "DEP001", name: "Human Resources", manager: "Alice Johnson", employees: 12 },
-    { code: "DEP002", name: "Finance", manager: "Bob Smith", employees: 8 },
-    { code: "DEP003", name: "IT", manager: "Charlie Brown", employees: 15 },
-    { code: "DEP004", name: "Marketing", manager: "Diana Prince", employees: 10 },
-    { code: "DEP005", name: "Sales", manager: "Edward Norton", employees: 20 },
-    { code: "DEP006", name: "Customer Support", manager: "Fiona Adams", employees: 18 },
-    { code: "DEP007", name: "Logistics", manager: "George Clarke", employees: 14 },
-    { code: "DEP008", name: "Procurement", manager: "Helen White", employees: 9 },
-    { code: "DEP009", name: "Legal", manager: "Ian Black", employees: 5 },
-    { code: "DEP010", name: "Research & Development", manager: "Jane Foster", employees: 22 },
-    { code: "DEP011", name: "Quality Assurance", manager: "Kevin Lee", employees: 11 },
-    { code: "DEP012", name: "Training", manager: "Laura Green", employees: 7 },
-    { code: "DEP013", name: "Public Relations", manager: "Michael Scott", employees: 6 },
-    { code: "DEP014", name: "Security", manager: "Nancy Drew", employees: 13 },
-    { code: "DEP015", name: "Maintenance", manager: "Oscar Wilde", employees: 8 }
-];
+import {departmentService} from "@/services/department.ts";
 
 export default function Departments() {
     const navigate = useNavigate();
+    const {
+        data: departments = [],
+        isLoading,
+        isError,
+        error,
+    } = departmentService.useList();
 
-    const handleRowClick = (code: string) => {
-        navigate(`/admin/departments/${code}`);
-    };
+    if (isLoading)
+        return (
+            <DashboardLayout>
+                <div className="h-full w-full flex items-center justify-center">
+                    <Loader2 className="animate-spin" />
+                </div>
+            </DashboardLayout>
+        );
+
+    if (isError)
+        return (
+            <DashboardLayout>
+                <div className="w-full h-full flex items-center justify-center">
+                    <p>Error: {(error as Error).message}</p>
+                </div>
+            </DashboardLayout>
+        );
 
     return (
         <DashboardLayout>
@@ -56,6 +59,7 @@ export default function Departments() {
                             <Funnel size={20} />
                         </Button>
                         <Button
+                            onClick={() => navigate("/admin/departments/create")}
                             variant="default"
                             className="flex items-center gap-2"
                         >
@@ -80,13 +84,15 @@ export default function Departments() {
                             {departments.map((dept) => (
                                 <TableRow
                                     key={dept.code}
-                                    onClick={() => handleRowClick(dept.code)}
+                                    onClick={() =>
+                                        navigate(`/admin/departments/${dept.id}/edit`)
+                                    }
                                     className="cursor-pointer"
                                 >
                                     <TableCell className="font-medium">{dept.code}</TableCell>
                                     <TableCell>{dept.name}</TableCell>
-                                    <TableCell>{dept.manager}</TableCell>
-                                    <TableCell className="text-right">{dept.employees}</TableCell>
+                                    <TableCell>{dept.manager.name}</TableCell>
+                                    <TableCell className="text-right">{dept.employee_count}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
