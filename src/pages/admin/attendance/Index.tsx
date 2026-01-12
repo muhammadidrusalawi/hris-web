@@ -13,13 +13,13 @@ import {
     TableRow
 } from "@/components/ui/table.tsx";
 
-export default function ListAttendanceEmployee(){
+export default function Attendances(){
     const {
         data: attendances = [],
         isLoading,
         isError,
         error,
-    } = attendanceService.useListFromEmployee();
+    } = attendanceService.useListFromAdmin();
 
     if (isLoading)
         return (
@@ -45,7 +45,7 @@ export default function ListAttendanceEmployee(){
                     <div>
                         <h1 className="text-md font-semibold">Employee Attendances</h1>
                         <p className="text-sm text-muted-foreground">
-                            List of your attendance records
+                            List of all employee attendance records
                         </p>
                     </div>
 
@@ -66,7 +66,7 @@ export default function ListAttendanceEmployee(){
 
                 <div>
                     <Table>
-                        <TableCaption>A list of all Your attendance records.</TableCaption>
+                        <TableCaption>A list of all employee attendance records.</TableCaption>
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Employee Code</TableHead>
@@ -86,13 +86,7 @@ export default function ListAttendanceEmployee(){
                                     <TableCell className="font-medium">{atd.employee_code}</TableCell>
                                     <TableCell>{atd.employee_name}</TableCell>
                                     <TableCell>{atd.position}</TableCell>
-                                    <TableCell>
-                                        {new Date(atd.date).toLocaleDateString("id-ID", {
-                                            day: "2-digit",
-                                            month: "short",
-                                            year: "numeric",
-                                        })}
-                                    </TableCell>
+                                    <TableCell>{atd.date}</TableCell>
                                     <TableCell>{atd.clock_in}</TableCell>
 
                                     <TableCell className="text-right">

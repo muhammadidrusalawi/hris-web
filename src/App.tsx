@@ -16,6 +16,13 @@ import Employees from "@/pages/admin/employee/Index.tsx";
 import CreateEmployee from "@/pages/admin/employee/Create.tsx";
 import EditEmployee from "@/pages/admin/employee/Edit.tsx";
 import EditDepartment from "@/pages/admin/department/Edit.tsx";
+import UserProfile from "@/pages/auth/profile.tsx";
+import ListAttendanceEmployee from "@/pages/employee/attendance/Index.tsx";
+import Attendances from "@/pages/admin/attendance/Index.tsx";
+import Leaves from "@/pages/admin/leave/Index.tsx";
+import ListLeaveBalanceEmployee from "@/pages/employee/leave/Index.tsx";
+import EditLeave from "@/pages/admin/leave/Edit.tsx";
+import CreateLeaveEmployee from "@/pages/employee/leave/Create.tsx";
 
 export default function App(){
     return (
@@ -26,10 +33,11 @@ export default function App(){
 
                     <Route element={<GuestRoute />}>
                         <Route path="/auth/sign-in" element={<Login />} />
-                        <Route
-                            path="/auth/sign-in-with-code"
-                            element={<LoginWithEmployeeCode />}
-                        />
+                        <Route path="/auth/sign-in-with-code" element={<LoginWithEmployeeCode />} />
+                    </Route>
+
+                    <Route element={<ProtectedRoute allowedRoles={["admin", "employee", "manager"]} />}>
+                        <Route path="/auth/profile" element={<UserProfile />} />
                     </Route>
 
                     <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
@@ -43,15 +51,16 @@ export default function App(){
                         <Route path="/admin/employees" element={<Employees />} />
                         <Route path="/admin/employees/create" element={<CreateEmployee />} />
                         <Route path="/admin/employees/:id/edit" element={<EditEmployee />} />
+                        <Route path="/admin/attendances" element={<Attendances />} />
+                        <Route path="/admin/leaves" element={<Leaves />} />
+                        <Route path="/admin/leaves/employee/:employeeId" element={<EditLeave />} />
                     </Route>
 
-                    <Route
-                        element={<ProtectedRoute allowedRoles={["employee"]} />}
-                    >
-                        <Route
-                            path="/employee/dashboard"
-                            element={<EmployeeDashboard />}
-                        />
+                    <Route element={<ProtectedRoute allowedRoles={["employee"]} /> }>
+                        <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+                        <Route path="/employee/attendances" element={<ListAttendanceEmployee />} />
+                        <Route path="/employee/leaves" element={<ListLeaveBalanceEmployee />} />
+                        <Route path="/employee/leaves/create" element={<CreateLeaveEmployee />} />
                     </Route>
                 </Routes>
             </Router>
