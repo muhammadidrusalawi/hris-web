@@ -44,7 +44,7 @@ export default function CreateDepartment() {
 
     return (
         <DashboardLayout>
-            <div className="flex w-full h-full flex-col gap-6 p-4">
+            <div className="flex w-full h-fit bg-white border rounded-xl flex-col gap-6 p-4">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-md font-semibold">Create New Department</h1>
