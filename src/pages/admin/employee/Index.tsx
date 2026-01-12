@@ -44,7 +44,7 @@ export default function Employees() {
 
     return (
         <DashboardLayout>
-            <div className="flex w-full h-full flex-col gap-4 p-4">
+            <div className="flex w-full h-fit flex-col bg-white border rounded-xl gap-4 p-4">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-md font-semibold">Manage Employees</h1>
