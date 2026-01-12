@@ -2,54 +2,42 @@ import AuthLayout from "@/layouts/AuthLayout";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Mail } from "lucide-react";
+import {Loader2, Mail} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {authService} from "@/services/auth";
 import {
     type LoginWithEmployeeCodeForm,
-    loginWithEmployeeCodeSchema,
-} from "@/schemas/auth/login-with-employee-code-schema";
-import { loginWithEmployeeCodeService } from "@/services/auth";
-import { toast } from "react-toastify";
+    loginWithEmployeeCodeSchema
+} from "@/schemas/auth/login-with-employee-code-schema.ts";
 
 export default function LoginWithEmployeeCode() {
     const navigate = useNavigate();
-    const { login } = useAuth();
 
     const {
         register,
         handleSubmit,
         reset,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm<LoginWithEmployeeCodeForm>({
         resolver: zodResolver(loginWithEmployeeCodeSchema),
     });
 
-    const onSubmit = async (data: LoginWithEmployeeCodeForm) => {
-        try {
-            const res = await loginWithEmployeeCodeService(data);
-            if (!res.success || !res.data) {
-                toast.error(res.message);
-                return;
-            }
+    const { mutate, isPending } = authService.useLoginWithEmployeeCode();
 
-            login(res.data.user, res.data.token);
-            navigate("/employee/dashboard");
+    const onSubmit = (data: LoginWithEmployeeCodeForm) => {
+        mutate(data, {
+            onSuccess: (res) => {
+                reset();
 
-            toast.success(res.message);
-            reset();
-        } catch (err: unknown) {
-            const error = err as {
-                response?: {
-                    data?: {
-                        message?: string;
-                    };
-                };
-            };
-            toast.error(error?.response?.data?.message || "An error occurred");
-        }
+                navigate(
+                    res.data.user.role === "admin"
+                        ? "/admin/dashboard"
+                        : "/employee/dashboard"
+                );
+            },
+        });
     };
 
     return (
@@ -74,10 +62,14 @@ export default function LoginWithEmployeeCode() {
 
                 <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     className="w-full"
                 >
-                    Sign In
+                    {isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                        "Sign In"
+                    )}
                 </Button>
             </form>
 

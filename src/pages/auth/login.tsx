@@ -2,56 +2,39 @@ import AuthLayout from "@/layouts/AuthLayout";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { IdCardLanyard } from "lucide-react";
+import {IdCardLanyard, Loader2} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type LoginForm, loginSchema } from "@/schemas/auth/login-schema";
-import { loginService } from "@/services/auth";
-import { toast } from "react-toastify";
+import {authService} from "@/services/auth";
 
 export default function Login() {
     const navigate = useNavigate();
-    const { login } = useAuth();
 
     const {
         register,
         handleSubmit,
         reset,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = async (data: LoginForm) => {
-        try {
-            const res = await loginService(data);
-            if (!res.success || !res.data) {
-                toast.error(res.message);
-                return;
-            }
+    const { mutate, isPending } = authService.useLogin();
 
-            login(res.data.user, res.data.token);
+    const onSubmit = (data: LoginForm) => {
+        mutate(data, {
+            onSuccess: (res) => {
+                reset();
 
-            navigate(
-                res.data.user.role === "admin"
-                    ? "/admin/dashboard"
-                    : "/employee/dashboard"
-            );
-
-            toast.success(res.message);
-            reset();
-        } catch (err: unknown) {
-            const error = err as {
-                response?: {
-                    data?: {
-                        message?: string;
-                    };
-                };
-            };
-            toast.error(error?.response?.data?.message || "An error occurred");
-        }
+                navigate(
+                    res.data.user.role === "admin"
+                        ? "/admin/dashboard"
+                        : "/employee/dashboard"
+                );
+            },
+        });
     };
 
     return (
@@ -92,10 +75,14 @@ export default function Login() {
 
                 <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     className="w-full"
                 >
-                    Sign In
+                    {isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                        "Sign In"
+                    )}
                 </Button>
             </form>
 

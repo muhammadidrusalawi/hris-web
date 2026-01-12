@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from "react";
-import {getCookie, removeCookie, setCookie} from "@/hooks/use-cookie.ts";
-import { AuthContext } from "@/hooks/use-auth";
-import {toast} from "react-toastify";
-import {logoutApi} from "@/api/auth.ts";
-
-export interface User {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-}
+import { getCookie, removeCookie, setCookie } from "@/hooks/use-cookie.ts";
+import { AuthContext } from "@/hooks/use-auth.ts";
+import type { User } from "@/types/user.ts";
 
 export interface AuthContextType {
     user: User | null;
     token: string | null;
     login: (user: User, token: string) => void;
     logout: () => void;
+    updateUser: (payload: Partial<User>) => void;
     isAuthenticated: boolean;
     initialized: boolean;
 }
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children,}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [initialized, setInitialized] = useState<boolean>(false);
@@ -48,19 +41,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setCookie("user", JSON.stringify(userData));
     };
 
-    const logout = async () => {
-        try {
-            const res = await logoutApi()
-            toast.success(res.message)
-        } catch {
-            toast.error("Logout failed")
-        } finally {
-            setUser(null)
-            setToken(null)
-            removeCookie("token")
-            removeCookie("user")
-        }
-    }
+    const updateUser = (payload: Partial<User>) => {
+        setUser((prev) => {
+            if (!prev) return prev;
+            const updatedUser = { ...prev, ...payload };
+            setCookie("user", JSON.stringify(updatedUser));
+
+            return updatedUser;
+        });
+    };
+
+
+    const logout = () => {
+        setUser(null);
+        setToken(null);
+        removeCookie("token");
+        removeCookie("user");
+    };
 
     return (
         <AuthContext.Provider
@@ -69,6 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 token,
                 login,
                 logout,
+                updateUser,
                 initialized,
                 isAuthenticated: initialized && !!token,
             }}

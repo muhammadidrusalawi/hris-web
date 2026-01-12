@@ -6,6 +6,8 @@ import {
     type LoginWithEmployeeCodeForm,
     loginWithEmployeeCodeSchema
 } from "@/schemas/auth/login-with-employee-code-schema.ts";
+import type {User} from "@/types/user.ts";
+import {type UpdateProfileForm, updateProfileSchema} from "@/schemas/auth/update-profile-schema.ts";
 
 export const loginApi = async (
     payload: LoginForm,
@@ -26,6 +28,24 @@ export const loginWithEmployeeCodeApi = async (
 
     const res = await axiosInstance.post<ApiResponse<LoginResponse>>(
         "/auth/login-with-code",
+        parsed,
+    );
+    return res.data;
+};
+
+export const getProfileApi = async (): Promise<ApiResponse<User>> => {
+    const res = await axiosInstance.get<ApiResponse<User>>(
+        "/auth/profile",
+    );
+    return res.data;
+};
+
+export const updateProfileApi = async (
+    payload: UpdateProfileForm,
+): Promise<ApiResponse<User>> => {
+    const parsed = updateProfileSchema.parse(payload);
+    const res = await axiosInstance.put<ApiResponse<User>>(
+        "/auth/profile",
         parsed,
     );
     return res.data;
