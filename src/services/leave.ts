@@ -103,6 +103,7 @@ export const leaveService = {
             onSuccess: async (res) => {
                 toast.success(res.message);
                 await queryClient.invalidateQueries({ queryKey: ["leaves", "current"] });
+                await queryClient.invalidateQueries({ queryKey: ["leaveBalances", "current"] });
             },
             onError: (err: any) => {
                 if (err.name === "ZodError") {

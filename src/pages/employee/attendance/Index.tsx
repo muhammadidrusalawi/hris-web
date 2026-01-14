@@ -1,7 +1,6 @@
 import {DashboardLayout} from "@/layouts/DashboardLayout.tsx";
-import {Loader2, Search} from "lucide-react";
+import {Loader2} from "lucide-react";
 import {attendanceService} from "@/services/attendance.ts";
-import {Input} from "@/components/ui/input.tsx";
 import {
     Table,
     TableBody,
@@ -41,26 +40,12 @@ export default function ListAttendanceEmployee(){
     return (
         <DashboardLayout>
             <div className="flex w-full h-fit flex-col bg-white border rounded-xl gap-4 p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center">
                     <div>
                         <h1 className="text-md font-semibold">Employee Attendances</h1>
                         <p className="text-sm text-muted-foreground">
                             List of your attendance records
                         </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <div className="relative w-96">
-                            <Search
-                                size={16}
-                                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                            />
-                            <Input
-                                type="text"
-                                placeholder="Search by date or name..."
-                                className="pl-9"
-                            />
-                        </div>
                     </div>
                 </div>
 
@@ -109,7 +94,7 @@ export default function ListAttendanceEmployee(){
                         </TableBody>
                         <TableFooter>
                             <TableRow>
-                                <TableCell colSpan={7}>Total Records</TableCell>
+                                <TableCell colSpan={5}>Total Records</TableCell>
                                 <TableCell className="text-right">{attendances.length}</TableCell>
                             </TableRow>
                         </TableFooter>

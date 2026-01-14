@@ -90,35 +90,50 @@ export default function ListLeaveBalanceEmployee(){
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div className="p-4 bg-blue-50 rounded-xl shadow flex items-center gap-4">
-                        <Users className="text-blue-500 w-6 h-6" />
-                        <div className="flex flex-col">
-                            <span className="text-sm text-muted-foreground">Total Leave</span>
-                            <span className="text-xl font-semibold">{balanceData?.leave_balance?.total ?? "—"}</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-2">
+                    {[
+                        { label: "Total Quota", value: balanceData?.leave_balance?.total, icon: Users, color: "blue" },
+                        { label: "Used", value: balanceData?.leave_balance?.used, icon: Check, color: "emerald" },
+                        { label: "Remaining", value: balanceData?.leave_balance?.remaining, icon: Clock, color: "orange" },
+                        { label: "Pending", value: balanceData?.pending_leaves, icon: Bell, color: "purple" },
+                    ].map((stat, i) => (
+                        <div key={i} className="group relative cursor-pointer">
+                            <div className="relative bg-white border border-slate-100 rounded-[2rem] p-6 transition-all duration-500 ease-out group-hover:bg-slate-50/50 group-hover:border-slate-300 shadow-[0_2px_10px_rgba(0,0,0,0.02)] group-hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
+
+                                <div className="flex flex-col gap-5">
+                                    <div className="flex justify-between items-start">
+                                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-${stat.color}-500 group-hover:shadow-sm transition-all duration-500 group-hover:-translate-y-1`}>
+                                            <stat.icon size={20} strokeWidth={2} />
+                                        </div>
+
+                                        <div className="flex flex-col items-end pt-1">
+                                            <span className="text-[8px] font-black text-slate-300 uppercase tracking-[0.2em] leading-none mb-1">Status</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className={`w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-${stat.color}-500 transition-colors duration-500`} />
+                                                <span className="text-[10px] font-bold text-slate-700">Active</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-0.5">
+                                        <h3 className="text-[11px] font-bold text-slate-600 uppercase tracking-wider transition-colors duration-500 group-hover:text-slate-600">
+                                            {stat.label}
+                                        </h3>
+                                        <div className="flex items-baseline gap-1.5">
+                                            <span className="text-4xl font-light tracking-tighter text-slate-900 transition-all duration-500 group-hover:scale-[1.02] origin-left">
+                                                {stat.value ?? "0"}
+                                            </span>
+                                            <span className="text-[10px] font-black text-slate-300 uppercase">
+                                                {stat.label === "Pending" ? "Request" : "Days"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                            </div>
                         </div>
-                    </div>
-                    <div className="p-4 bg-green-50 rounded-xl shadow flex items-center gap-4">
-                        <Check className="text-green-500 w-6 h-6" />
-                        <div className="flex flex-col">
-                            <span className="text-sm text-muted-foreground">Used</span>
-                            <span className="text-xl font-semibold">{balanceData?.leave_balance?.used ?? "—"}</span>
-                        </div>
-                    </div>
-                    <div className="p-4 bg-yellow-50 rounded-xl shadow flex items-center gap-4">
-                        <Clock className="text-yellow-500 w-6 h-6" />
-                        <div className="flex flex-col">
-                            <span className="text-sm text-muted-foreground">Remaining</span>
-                            <span className="text-xl font-semibold">{balanceData?.leave_balance?.remaining ?? "—"}</span>
-                        </div>
-                    </div>
-                    <div className="p-4 bg-purple-50 rounded-xl shadow flex items-center gap-4">
-                        <Bell className="text-purple-500 w-6 h-6" />
-                        <div className="flex flex-col">
-                            <span className="text-sm text-muted-foreground">Pending Leaves</span>
-                            <span className="text-xl font-semibold">{balanceData?.pending_leaves}</span>
-                        </div>
-                    </div>
+                    ))}
                 </div>
 
                 <div className="flex w-full flex-col gap-4">
@@ -130,7 +145,7 @@ export default function ListLeaveBalanceEmployee(){
                                 <TableHead>Type</TableHead>
                                 <TableHead>Start Date</TableHead>
                                 <TableHead>End Date</TableHead>
-                                <TableHead>Total Days</TableHead>
+                                <TableHead>Total</TableHead>
                                 <TableHead>Reason</TableHead>
                                 <TableHead className="text-center">Status</TableHead>
                             </TableRow>
@@ -142,18 +157,18 @@ export default function ListLeaveBalanceEmployee(){
                                     <TableCell>
                                         {new Date(leave.start_date).toLocaleDateString("id-ID", {
                                             day: "2-digit",
-                                            month: "short",
+                                            month: "2-digit",
                                             year: "numeric",
                                         })}
                                     </TableCell>
                                     <TableCell>
                                         {new Date(leave.end_date).toLocaleDateString("id-ID", {
                                             day: "2-digit",
-                                            month: "short",
+                                            month: "2-digit",
                                             year: "numeric",
                                         })}
                                     </TableCell>
-                                    <TableCell>{leave.total_days}</TableCell>
+                                    <TableCell>{leave.total_days} days</TableCell>
                                     <TableCell>{leave.reason}</TableCell>
                                     <TableCell className="flex items-center justify-center">
                                         <div className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${

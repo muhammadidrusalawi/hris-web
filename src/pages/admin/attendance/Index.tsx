@@ -86,7 +86,13 @@ export default function Attendances(){
                                     <TableCell className="font-medium">{atd.employee_code}</TableCell>
                                     <TableCell>{atd.employee_name}</TableCell>
                                     <TableCell>{atd.position}</TableCell>
-                                    <TableCell>{atd.date}</TableCell>
+                                    <TableCell>
+                                        {new Date(atd.date).toLocaleDateString("id-ID", {
+                                            day: "2-digit",
+                                            month: "short",
+                                            year: "numeric",
+                                        })}
+                                    </TableCell>
                                     <TableCell>{atd.clock_in}</TableCell>
 
                                     <TableCell className="text-right">
